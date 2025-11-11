@@ -14,6 +14,9 @@ class Fibonacci {
         System.out.println("    Running Fibonacci passes");
         System.out.println("        fibonacci -P 10");
         System.out.println("        fibonacci -P 47");
+        System.out.println("    Running Fibonacci passes (using IF statements not SWITCH statements)");
+        System.out.println("        fibonacci -PI 10");
+        System.out.println("        fibonacci -PI 47");
         System.out.println("    Running Fibonacci while logging the values");
         System.out.println("        fibonacci -P 10 -L");
         System.out.println("        fibonacci -P 47 -L");
@@ -54,6 +57,32 @@ class Fibonacci {
         return newFibonacciArray;
     }
 
+    private static int[] RunUsingIf(int passes, boolean logging) {
+        int[] newFibonacciArray = new int[passes];
+        int furtherPrevious = 0;
+        int previous = 1;
+
+        for (int pass = 0; pass < passes; pass++) {
+            // use switch for slightly faster iteration
+            if (pass == 0) {
+                if (logging) {System.out.println(0);}
+                furtherPrevious = 0;
+                newFibonacciArray[pass] = 0;
+            } else if (pass == 1) {
+                if (logging) {System.out.println(1);}
+                previous = 1;
+                newFibonacciArray[pass] = 1;
+            } else {
+                newFibonacciArray[pass] = furtherPrevious + previous;
+                furtherPrevious = previous;
+                previous = newFibonacciArray[pass];
+                if (logging) {System.out.println(newFibonacciArray[pass]);}
+            }
+        }
+
+        return newFibonacciArray;
+    }
+
     public static void main(String[] args) {
         System.out.println("Running Fibonacci (Java) based on given arguments...");
 
@@ -65,6 +94,7 @@ class Fibonacci {
         
         int runUntil = 0;
         boolean log = false;
+        boolean useIfStatements = false;
 
         try {
             for (int argsLookupIndex = 0; argsLookupIndex < args.length; argsLookupIndex++) {
@@ -76,6 +106,13 @@ class Fibonacci {
                 if (args[argsLookupIndex].equals("-P")) {
                     String runUntilString = args[argsLookupIndex + 1];
                     runUntil = Integer.parseInt(runUntilString);
+                    continue;
+                }
+
+                if (args[argsLookupIndex].equals("-PI")) {
+                    String runUntilString = args[argsLookupIndex + 1];
+                    runUntil = Integer.parseInt(runUntilString);
+                    useIfStatements = true;
                     continue;
                 }
 
@@ -104,7 +141,13 @@ class Fibonacci {
         }
 
         long startTime = System.nanoTime();
-        Run(runUntil, log);
+        
+        if (useIfStatements == false) {
+            Run(runUntil, log);
+        } else {
+            RunUsingIf(runUntil, log);
+        }
+
         long elapsedTimeNanoseconds = System.nanoTime() - startTime;
         int elapsedTime = (int) Math.round(elapsedTimeNanoseconds * 0.000001);
         System.out.println("Finished     - Fibonacci " + runUntil + " passes");
